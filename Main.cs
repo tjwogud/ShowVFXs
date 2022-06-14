@@ -29,7 +29,11 @@ namespace ShowCurrentFilters
                 return true;
             };
             modEntry.OnGUI = OnGUI;
-            modEntry.OnSaveGUI = _ => Settings.Save(modEntry);
+            modEntry.OnSaveGUI = _ => {
+                Logger.Log("Saving Settings...");
+                Settings.Save(modEntry);
+                Logger.Log("Save Completed!");
+            };
             Logger.Log("Loading Settings...");
             Settings = new Settings();
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
@@ -78,8 +82,14 @@ namespace ShowCurrentFilters
             GUILayout.BeginVertical(GUI.skin.box);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label(Localization["scf.settings.textFormat"]);
-            Settings.textFormat = GUILayout.TextField(Settings.textFormat);
+            GUILayout.Label(Localization["scf.settings.textFormat1"]);
+            Settings.textFormat1 = GUILayout.TextField(Settings.textFormat1);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(Localization["scf.settings.textFormat2"]);
+            Settings.textFormat2 = GUILayout.TextField(Settings.textFormat2);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 

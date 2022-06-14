@@ -14,13 +14,13 @@ namespace ShowCurrentFilters
 				new XmlSerializer(GetType()).Serialize(writer, this);
 		}
 
-		internal float x = 0;
-		internal float y = 0;
-		internal int textSize = 35;
-		internal bool boldText = false;
-		internal bool shadowText = true;
+		public float x = 0;
+		public float y = 0;
+		public int textSize = 35;
+		public bool boldText = false;
+		public bool shadowText = true;
 		[XmlIgnore]
-		internal TextAnchor textAlign
+		public TextAnchor textAlign
         {
 			get {
 				return (TextAnchor)mTextAlign;
@@ -30,10 +30,11 @@ namespace ShowCurrentFilters
             {
 				mTextAlign = (int)value;
             }
-        }
-		private int mTextAlign = (int)TextAnchor.LowerLeft;
-		internal string textFormat = "{name}: {value}";
-		internal string textSeparator = "{newLine}";
-		internal string textEmpty = "No filters applied!";
+		}
+		public int mTextAlign = (int)TextAnchor.LowerLeft;
+		public string textFormat1 = "{name}: {value}%";
+		public string textFormat2 = "{name}: {value}";
+		public string textSeparator = "{newLine}";
+		public string textEmpty = "No filters applied!";
 	}
 }

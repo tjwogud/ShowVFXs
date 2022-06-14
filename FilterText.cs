@@ -65,8 +65,10 @@ namespace ShowCurrentFilters
             if (FilterPatch.filters.Count == 0)
                 text.text = Main.Settings.textEmpty;
             else
-                text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator, FilterPatch.filters.Select(pair => 
-                    Main.Settings.textFormat.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", onOffTypes != null && onOffTypes.Contains(pair.Key) ? Main.Localization["scf.filterOn"] : (pair.Value * 100).ToString())));
+                text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator, FilterPatch.filters.Select(pair =>
+                    onOffTypes != null && onOffTypes.Contains(pair.Key)
+                        ? Main.Settings.textFormat2.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", Main.Localization["scf.filterOn"])
+                        : Main.Settings.textFormat1.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", (pair.Value * 100).ToString())));
             text.fontSize = Main.Settings.textSize;
             text.fontStyle = Main.Settings.boldText ? FontStyle.Bold : FontStyle.Normal;
             text.alignment = Main.Settings.textAlign;
