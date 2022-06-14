@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,8 @@ namespace ShowCurrentFilters
 {
     internal class FilterText : MonoBehaviour
     {
+        internal static List<Filter> onOffTypes = new List<Filter>();
+
         private GameObject textObject;
         private RectTransform rect;
         private Text text;
@@ -20,14 +23,13 @@ namespace ShowCurrentFilters
             canvas.sortingOrder = 10000;
             CanvasScaler canvasScaler = gameObject.AddComponent<CanvasScaler>();
             canvasScaler.referenceResolution = new Vector2(1920, 1080);
-            textObject = new GameObject();
+            textObject = new GameObject("Canvas");
             textObject.transform.SetParent(transform);
             textObject.AddComponent<Canvas>();
             rect = textObject.GetComponent<RectTransform>();
-            GameObject obj = new GameObject();
+            GameObject obj = new GameObject("Text");
             obj.transform.SetParent(textObject.transform);
             text = obj.AddComponent<Text>();
-            text.font = RDString.fontData.font;
             text.text = "테스트텍스트";
             text.color = Color.white;
             text.alignByGeometry = true;
@@ -43,6 +45,11 @@ namespace ShowCurrentFilters
             rect.anchoredPosition = Vector2.zero;
         }
 
+        private void Start()
+        {
+            text.font = RDString.fontData.font;
+        }
+
         private float lastX = float.MaxValue;
         private float lastY = float.MaxValue;
         private int lastSize = int.MaxValue;
@@ -50,19 +57,14 @@ namespace ShowCurrentFilters
 
         private void LateUpdate()
         {
-            if (scnEditor.instance == null)
-            {
-                Destroy(gameObject);
-                instance = null;
-            }
-            textObject.SetActive(scnEditor.instance.playMode);
-            if (!scnEditor.instance.playMode)
+            textObject.SetActive((!scrController.instance?.paused).GetValueOrDefault() && (scrConductor.instance?.isGameWorld).GetValueOrDefault());
+            if (!textObject.activeSelf)
                 return;
             if (FilterPatch.filters.Count == 0)
                 text.text = Main.Settings.textEmpty;
             else
-                text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator,
-                    FilterPatch.filters.Select(pair => Main.Settings.textFormat.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", (pair.Value * 100).ToString())));
+                text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator, FilterPatch.filters.Select(pair => 
+                    Main.Settings.textFormat.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", onOffTypes.Contains(pair.Key) ? Main.Localization["scf.filterOn"] : (pair.Value * 100).ToString())));
             text.fontSize = Main.Settings.textSize;
             text.fontStyle = Main.Settings.boldText ? FontStyle.Bold : FontStyle.Normal;
             text.alignment = Main.Settings.textAlign;
@@ -88,13 +90,11 @@ namespace ShowCurrentFilters
 
         internal static void AddOrDelete(bool value)
         {
-            if (scnEditor.instance == null)
-                return;
             if (value)
             {
                 if (instance != null)
                     return;
-                GameObject obj = new GameObject();
+                GameObject obj = new GameObject("FilterText");
                 obj.AddComponent<FilterText>();
             } else
             {

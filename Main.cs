@@ -21,7 +21,7 @@ namespace ShowCurrentFilters
             Harmony harmony = new Harmony(modEntry.Info.Id);
             modEntry.OnToggle = (_, value) =>
             {
-                FilterText.AddOrDelete(true);
+                FilterText.AddOrDelete(value);
                 if (value)
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                 else
@@ -29,7 +29,9 @@ namespace ShowCurrentFilters
                 return true;
             };
             modEntry.OnGUI = OnGUI;
+            modEntry.OnSaveGUI = OnSaveGUI;
             Logger.Log("Loading Settings...");
+            Settings = new Settings();
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
             Logger.Log("Load Completed!");
             Localization = Localization.Load(modEntry, "1QcrRL6LAs8WxJj_hFsEJa3CLM5g3e8Ya0KQlRKXwdlU", 967104647);
@@ -156,6 +158,11 @@ namespace ShowCurrentFilters
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+        }
+
+        public static void OnSaveGUI(UnityModManager.ModEntry modEntry)
+        {
+            Settings.Save(modEntry);
         }
     }
 }
