@@ -29,7 +29,7 @@ namespace ShowCurrentFilters
                 return true;
             };
             modEntry.OnGUI = OnGUI;
-            modEntry.OnSaveGUI = OnSaveGUI;
+            modEntry.OnSaveGUI = _ => Settings.Save(modEntry);
             Logger.Log("Loading Settings...");
             Settings = new Settings();
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
@@ -158,11 +158,6 @@ namespace ShowCurrentFilters
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-        }
-
-        public static void OnSaveGUI(UnityModManager.ModEntry modEntry)
-        {
-            Settings.Save(modEntry);
         }
     }
 }

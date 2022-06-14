@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ADOFAI;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +9,7 @@ namespace ShowCurrentFilters
 {
     internal class FilterText : MonoBehaviour
     {
-        internal static List<Filter> onOffTypes = new List<Filter>();
+        internal static List<Filter> onOffTypes;
 
         private GameObject textObject;
         private RectTransform rect;
@@ -64,7 +66,7 @@ namespace ShowCurrentFilters
                 text.text = Main.Settings.textEmpty;
             else
                 text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator, FilterPatch.filters.Select(pair => 
-                    Main.Settings.textFormat.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", onOffTypes.Contains(pair.Key) ? Main.Localization["scf.filterOn"] : (pair.Value * 100).ToString())));
+                    Main.Settings.textFormat.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", onOffTypes != null && onOffTypes.Contains(pair.Key) ? Main.Localization["scf.filterOn"] : (pair.Value * 100).ToString())));
             text.fontSize = Main.Settings.textSize;
             text.fontStyle = Main.Settings.boldText ? FontStyle.Bold : FontStyle.Normal;
             text.alignment = Main.Settings.textAlign;
@@ -101,6 +103,17 @@ namespace ShowCurrentFilters
                 if (instance != null)
                     Destroy(instance);
             }
+        }
+
+        internal static void LoadOnOffTypes()
+        {
+            if (onOffTypes != null)
+                return;
+            onOffTypes = new List<Filter>();
+            List<string> enable = GCS.levelEventsInfo[GCS.levelEventTypeString[LevelEventType.SetFilter]].propertiesInfo["intensity"].enableIfVals.Where(tuple => tuple.Item1 == "filter").Select(tuple => tuple.Item2).ToList();
+            foreach (var v in Enum.GetValues(typeof(Filter)))
+                if (!enable.Contains(v.ToString()))
+                    onOffTypes.Add((Filter)v);
         }
 
         private static GameObject instance;

@@ -5,7 +5,7 @@ using UnityModManagerNet;
 
 namespace ShowCurrentFilters
 {
-    internal class Settings : UnityModManager.ModSettings
+    public class Settings : UnityModManager.ModSettings
     {
         public override void Save(UnityModManager.ModEntry modEntry)
         {
