@@ -9,7 +9,8 @@ namespace ShowCurrentFilters
 {
     internal class FilterText : MonoBehaviour
     {
-        internal static List<Filter> onOffTypes;
+        internal static List<Filter> onOffTypes = new List<Filter>();
+        private static bool inited = false;
 
         private GameObject textObject;
         private RectTransform rect;
@@ -49,6 +50,14 @@ namespace ShowCurrentFilters
 
         private void Start()
         {
+            if (!inited)
+            {
+                inited = true;
+                List<string> enable = GCS.levelEventsInfo[GCS.levelEventTypeString[LevelEventType.SetFilter]].propertiesInfo["intensity"].enableIfVals.Where(tuple => tuple.Item1 == "filter").Select(tuple => tuple.Item2).ToList();
+                foreach (var v in Enum.GetValues(typeof(Filter)))
+                    if (!enable.Contains(v.ToString()))
+                        onOffTypes.Add((Filter)v);
+            }
             text.font = RDString.fontData.font;
         }
 
@@ -68,7 +77,7 @@ namespace ShowCurrentFilters
                 text.text = string.Join(Main.Settings.textSeparator == "{newLine}" ? "\n" : Main.Settings.textSeparator, FilterPatch.filters.Select(pair =>
                     onOffTypes != null && onOffTypes.Contains(pair.Key)
                         ? Main.Settings.textFormat2.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", Main.Localization["scf.filterOn"])
-                        : Main.Settings.textFormat1.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", (pair.Value * 100).ToString())));
+                        : Main.Settings.textFormat1.Replace("{name}", RDString.GetEnumValue(pair.Key)).Replace("{value}", (Math.Round(pair.Value * Math.Pow(10, 2 + Main.Settings.intensityDecimal)) / Math.Pow(10, Main.Settings.intensityDecimal)).ToString())));
             text.fontSize = Main.Settings.textSize;
             text.fontStyle = Main.Settings.boldText ? FontStyle.Bold : FontStyle.Normal;
             text.alignment = Main.Settings.textAlign;
@@ -105,17 +114,6 @@ namespace ShowCurrentFilters
                 if (instance != null)
                     Destroy(instance);
             }
-        }
-
-        internal static void LoadOnOffTypes()
-        {
-            if (onOffTypes != null)
-                return;
-            onOffTypes = new List<Filter>();
-            List<string> enable = GCS.levelEventsInfo[GCS.levelEventTypeString[LevelEventType.SetFilter]].propertiesInfo["intensity"].enableIfVals.Where(tuple => tuple.Item1 == "filter").Select(tuple => tuple.Item2).ToList();
-            foreach (var v in Enum.GetValues(typeof(Filter)))
-                if (!enable.Contains(v.ToString()))
-                    onOffTypes.Add((Filter)v);
         }
 
         private static GameObject instance;

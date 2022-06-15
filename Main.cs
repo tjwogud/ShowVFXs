@@ -88,6 +88,14 @@ namespace ShowCurrentFilters
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            GUILayout.Space(10);
+            GUILayout.Label(Localization["scf.settings.intensityDecimal"]);
+            Settings.intensityDecimal = (int)Math.Round(GUILayout.HorizontalSlider(Settings.intensityDecimal, 0, 5, GUILayout.Width(200)));
+            GUILayout.Label(Settings.intensityDecimal.ToString());
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label(Localization["scf.settings.textFormat2"]);
             Settings.textFormat2 = GUILayout.TextField(Settings.textFormat2);
             GUILayout.FlexibleSpace();

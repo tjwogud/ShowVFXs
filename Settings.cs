@@ -33,6 +33,7 @@ namespace ShowCurrentFilters
 		}
 		public int mTextAlign = (int)TextAnchor.LowerLeft;
 		public string textFormat1 = "{name}: {value}%";
+		public int intensityDecimal = 5;
 		public string textFormat2 = "{name}: {value}";
 		public string textSeparator = "{newLine}";
 		public string textEmpty = "No filters applied!";

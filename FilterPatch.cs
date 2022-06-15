@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ShowCurrentFilters
 {
@@ -16,6 +15,8 @@ namespace ShowCurrentFilters
             {
                 if (!scrVfxPlus.instance.filterToComp.ContainsKey(f))
                     return;
+                if (FilterText.onOffTypes.Contains(f))
+                    fIntensity = 1;
                 if (!fEnable || fIntensity == 0)
                     filters.Remove(f);
                 else
