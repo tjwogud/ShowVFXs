@@ -1,11 +1,65 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace ShowCurrentFilters
+namespace ShowVFXs
 {
     internal static class FilterPatch
     {
-        internal static readonly Dictionary<Filter, float> filters = new Dictionary<Filter, float>();
+        internal static readonly Dictionary<Filter, float> filter = new Dictionary<Filter, float>();
+
+        private static readonly List<Filter> filters = new List<Filter>();
+        private static readonly List<float> intensities = new List<float>();
+
+        internal static int Count()
+        {
+            return filters.Count;
+        }
+
+        internal static List<KeyValuePair<Filter, float>> GetPairs()
+        {
+            return filters.ToList().Select(filter => new KeyValuePair<Filter, float>(filter, Get(filter, out float v) ? v : v)).ToList();
+        } 
+
+        internal static bool Get(Filter filter, out float intensity)
+        {
+            intensity = 0;
+            int i = filters.IndexOf(filter);
+            if (i != -1)
+            {
+                intensity = intensities[i];
+                return true;
+            }
+            return false;
+        }
+
+        private static void Set(Filter filter, float intensity)
+        {
+            int i = filters.IndexOf(filter);
+            if (i != -1)
+                intensities[i] = intensity;
+            else
+            {
+                filters.Add(filter);
+                intensities.Add(intensity);
+            }
+        }
+
+        private static void Remove(Filter filter)
+        {
+            int i = filters.IndexOf(filter);
+            if (i != -1)
+            {
+                filters.RemoveAt(i);
+                intensities.RemoveAt(i);
+            }
+        }
+
+        private static void Clear()
+        {
+            filters.Clear();
+            intensities.Clear();
+        }
 
         [HarmonyPatch(typeof(ffxSetFilterPlus), "SetFilter")]
         internal static class SetFilterPatch
@@ -15,12 +69,10 @@ namespace ShowCurrentFilters
             {
                 if (!scrVfxPlus.instance.filterToComp.ContainsKey(f))
                     return;
-                if (FilterText.onOffTypes.Contains(f))
-                    fIntensity = 1;
-                if (!fEnable || fIntensity == 0)
-                    filters.Remove(f);
+                if (!fEnable || (fIntensity == 0 && !Main.onOffTypes.Contains(f)))
+                    Remove(f);
                 else
-                    filters[f] = fIntensity;
+                    Set(f, fIntensity);
             }
         }
 
@@ -30,12 +82,30 @@ namespace ShowCurrentFilters
             public static void Postfix(Filter ___filter, bool ___disableOthers)
             {
                 if (___disableOthers)
-                {
-                    float value = filters.TryGetValue(___filter, out float v) ? v : 0;
-                    filters.Clear();
-                    if (value != 0)
-                        filters.Add(___filter, value);
-                }
+                    if (Get(___filter, out float v))
+                    {
+                        Clear();
+                        Set(___filter, v);
+                    } else
+                        Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(scrController), "Awake_Rewind")]
+        public static class AwakeRewindPatch
+        {
+            public static void Postfix()
+            {
+                Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(scnEditor), "SwitchToEditMode")]
+        internal static class SwitchToEditPatch
+        {
+            internal static void Postfix()
+            {
+                Clear();
             }
         }
     }

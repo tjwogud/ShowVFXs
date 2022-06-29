@@ -3,14 +3,14 @@ using System;
 using System.IO;
 using UnityModManagerNet;
 
-namespace ShowCurrentFilters
+namespace ShowVFXs
 {
     internal static class Startup
     {
         internal static void Load(UnityModManager.ModEntry modEntry)
         {
             LoadAssembly("Mods/ShowCurrentFilters/Localizations.dll");
-            AccessTools.Method("ShowCurrentFilters.Main:Setup").Invoke(null, new object[] { modEntry });
+            AccessTools.Method($"{typeof(Startup).Namespace}.Main:Setup").Invoke(null, new object[] { modEntry });
         }
 
         internal static void LoadAssembly(string path)
