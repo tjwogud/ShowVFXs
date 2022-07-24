@@ -48,7 +48,7 @@ namespace ShowVFXs
                                                 .Replace("{name}", RDString.GetEnumValue(pair.Key))
                                             : Settings.filterTextFormat
                                                 .Replace("{name}", RDString.GetEnumValue(pair.Key))
-                                                .Replace("{value}", (Math.Round(pair.Value * Math.Pow(10, 2 + Settings.filterIntensityDecimal)) / Math.Pow(10, Settings.filterIntensityDecimal)).ToString()));
+                                                .Replace("{value}", (Math.Round((decimal)pair.Value * (decimal)Math.Pow(10, 2 + Settings.filterIntensityDecimal)) / (decimal)Math.Pow(10, Settings.filterIntensityDecimal)).ToString()));
                                 if (Settings.filterTextOrder == FilterTextOrder.Ascending || Settings.filterTextOrder == FilterTextOrder.Descending)
                                     query = query.OrderBy(t => t);
                                 if (Settings.filterTextOrder == FilterTextOrder.Descending || Settings.filterTextOrder == FilterTextOrder.ReverseAdded)
@@ -116,8 +116,8 @@ namespace ShowVFXs
                             string rgb = string.Format("{0:X2}{1:X2}{2:X2}", (byte)(Mathf.Clamp01(bloom.Tint.r) * 255f), (byte)(Mathf.Clamp01(bloom.Tint.g) * 255f), (byte)(Mathf.Clamp01(bloom.Tint.b) * 255f));
                             string rgba = string.Format("{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(Mathf.Clamp01(bloom.Tint.r) * 255f), (byte)(Mathf.Clamp01(bloom.Tint.g) * 255f), (byte)(Mathf.Clamp01(bloom.Tint.b) * 255f), (byte)(Mathf.Clamp01(bloom.Tint.a) * 255f));
                             return Settings.bloomTextFormat
-                                .Replace("{threshold}", (Math.Round(bloom.Threshold * Math.Pow(10, 2 + Settings.bloomThresholdDecimal)) / Math.Pow(10, Settings.bloomThresholdDecimal)).ToString())
-                                .Replace("{intensity}", (Math.Round(bloom.MasterAmount * Math.Pow(10, 2 + Settings.bloomIntensityDecimal)) / Math.Pow(10, Settings.bloomIntensityDecimal)).ToString())
+                                .Replace("{threshold}", (Math.Round((decimal)bloom.Threshold * (decimal)Math.Pow(10, 2 + Settings.bloomThresholdDecimal)) / (decimal)Math.Pow(10, Settings.bloomThresholdDecimal)).ToString())
+                                .Replace("{intensity}", (Math.Round((decimal)bloom.MasterAmount * (decimal)Math.Pow(10, 2 + Settings.bloomIntensityDecimal)) / (decimal)Math.Pow(10, Settings.bloomIntensityDecimal)).ToString())
                                 .Replace("{red}", ((int)(Mathf.Clamp01(bloom.Tint.r) * 255)).ToString())
                                 .Replace("{blue}", ((int)(Mathf.Clamp01(bloom.Tint.b) * 255)).ToString())
                                 .Replace("{green}", ((int)(Mathf.Clamp01(bloom.Tint.g) * 255)).ToString())
@@ -144,6 +144,8 @@ namespace ShowVFXs
                         () => Settings.entireTextAlign
                     );
                     entireText.enabled = Settings.entireEnable;
+                    if (UnityModManager.modEntries.Select(m => m.Info.Id).Contains("Overlayer"))
+                        AccessTools.Method(typeof(OverlayerSupport), "AddTags").Invoke(null, null);
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                 }
                 else
@@ -152,6 +154,8 @@ namespace ShowVFXs
                     UnityEngine.Object.Destroy(flashText);
                     UnityEngine.Object.Destroy(bloomText);
                     UnityEngine.Object.Destroy(entireText);
+                    if (UnityModManager.modEntries.Select(m => m.Info.Id).Contains("Overlayer"))
+                        AccessTools.Method(typeof(OverlayerSupport), "RemoveTags").Invoke(null, null);
                     harmony.UnpatchAll(modEntry.Info.Id);
                 }
                 return true;
@@ -252,7 +256,7 @@ namespace ShowVFXs
             }
 
             GUILayout.BeginHorizontal();
-            filterGui = GUILayout.Toggle(Settings.filterEnable && filterGui, Settings.filterEnable ? (filterGui ? "▼" : "▶") : "　", GUI.skin.label);
+            filterGui = GUILayout.Toggle(filterGui, filterGui ? "▼" : "▶", GUI.skin.label);
             Settings.filterEnable = filterText.enabled = GUILayout.Toggle(Settings.filterEnable, Localization["sv.gui.filter"]);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -323,7 +327,7 @@ namespace ShowVFXs
             }
 
             GUILayout.BeginHorizontal();
-            flashGui = GUILayout.Toggle(Settings.flashEnable && flashGui, Settings.flashEnable ? (flashGui ? "▼" : "▶") : "　", GUI.skin.label);
+            flashGui = GUILayout.Toggle(flashGui, flashGui ? "▼" : "▶", GUI.skin.label);
             Settings.flashEnable = flashText.enabled = GUILayout.Toggle(Settings.flashEnable, Localization["sv.gui.flash"]);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -395,7 +399,7 @@ namespace ShowVFXs
             }
 
             GUILayout.BeginHorizontal();
-            bloomGui = GUILayout.Toggle(Settings.bloomEnable && bloomGui, Settings.bloomEnable ? (bloomGui ? "▼" : "▶") : "　", GUI.skin.label);
+            bloomGui = GUILayout.Toggle(bloomGui, bloomGui ? "▼" : "▶", GUI.skin.label);
             Settings.bloomEnable = bloomText.enabled = GUILayout.Toggle(Settings.bloomEnable, Localization["sv.gui.bloom"]);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -458,7 +462,7 @@ namespace ShowVFXs
             }
 
             GUILayout.BeginHorizontal();
-            entireGui = GUILayout.Toggle(Settings.entireEnable && entireGui, Settings.entireEnable ? (entireGui ? "▼" : "▶") : "　", GUI.skin.label);
+            entireGui = GUILayout.Toggle(entireGui, entireGui ? "▼" : "▶", GUI.skin.label);
             Settings.entireEnable = entireText.enabled = GUILayout.Toggle(Settings.entireEnable, Localization["sv.gui.entire"]);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
