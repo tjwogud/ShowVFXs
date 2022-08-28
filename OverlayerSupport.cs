@@ -1,5 +1,6 @@
 ﻿using Overlayer;
-using Overlayer.Tags;
+using TagLib;
+using TagLib.Tags;
 
 namespace ShowVFXs
 {
@@ -7,15 +8,15 @@ namespace ShowVFXs
     {
         internal static void AddTags()
         {
-            Overlayer.Main.AllTags.LoadTags(typeof(OverlayerSupport));
+            TagManager.AllTags.LoadTags(typeof(OverlayerSupport));
             RefreshTexts();
         }
 
         internal static void RemoveTags()
         {
-            Overlayer.Main.AllTags.RemoveTag("FilterText");
-            Overlayer.Main.AllTags.RemoveTag("FlashText");
-            Overlayer.Main.AllTags.RemoveTag("BloomText");
+            TagManager.AllTags.RemoveTag("FilterText");
+            TagManager.AllTags.RemoveTag("FlashText");
+            TagManager.AllTags.RemoveTag("BloomText");
             RefreshTexts();
         }
 
