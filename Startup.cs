@@ -9,7 +9,6 @@ namespace ShowVFXs
     {
         internal static void Load(UnityModManager.ModEntry modEntry)
         {
-            LoadAssembly("Mods/ShowVFXs/Localizations.dll");
             AccessTools.Method($"{typeof(Startup).Namespace}.Main:Setup").Invoke(null, new object[] { modEntry });
         }
 

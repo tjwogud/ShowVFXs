@@ -182,7 +182,7 @@ namespace ShowVFXs
             Settings = new Settings();
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
             Logger.Log("Load Completed!");
-            Localization = Localization.Load(modEntry, "1QcrRL6LAs8WxJj_hFsEJa3CLM5g3e8Ya0KQlRKXwdlU", 967104647);
+            Localization = Localization.Load("1QcrRL6LAs8WxJj_hFsEJa3CLM5g3e8Ya0KQlRKXwdlU", 967104647, modEntry);
         }
 
         private static bool filterGui = false;
