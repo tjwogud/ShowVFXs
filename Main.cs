@@ -144,8 +144,12 @@ namespace ShowVFXs
                         () => Settings.entireTextAlign
                     );
                     entireText.enabled = Settings.entireEnable;
-                    if (UnityModManager.modEntries.Select(m => m.Info.Id).Contains("Overlayer"))
+                    try
+                    {
                         AccessTools.Method(typeof(OverlayerSupport), "AddTags").Invoke(null, null);
+                    }
+                    catch (Exception) {
+                    }
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                 }
                 else

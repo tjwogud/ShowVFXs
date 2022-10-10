@@ -1,6 +1,5 @@
 ﻿using Overlayer;
-using TagLib;
-using TagLib.Tags;
+using Overlayer.Core;
 
 namespace ShowVFXs
 {
@@ -25,13 +24,13 @@ namespace ShowVFXs
             OText.Texts.ForEach(otext => otext.Apply());
         }
 
-        [Tag("FilterText", "Shows filter")]
+        [Tag("FilterText")]
         internal static string GetFilterText() => Main.filterText.Text;
 
-        [Tag("FlashText", "Shows flash")]
+        [Tag("FlashText")]
         internal static string GetFlashText() => Main.flashText.Text;
 
-        [Tag("BloomText", "Shows bloom")]
+        [Tag("BloomText")]
         internal static string GetBloomText() => Main.bloomText.Text;
     }
 }
