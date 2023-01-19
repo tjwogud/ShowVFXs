@@ -7,15 +7,15 @@ namespace ShowVFXs
     {
         internal static void AddTags()
         {
-            TagManager.AllTags.LoadTags(typeof(OverlayerSupport));
+            Overlayer.Main.AllTags.LoadTags(typeof(OverlayerSupport));
             RefreshTexts();
         }
 
         internal static void RemoveTags()
         {
-            TagManager.AllTags.RemoveTag("FilterText");
-            TagManager.AllTags.RemoveTag("FlashText");
-            TagManager.AllTags.RemoveTag("BloomText");
+            Overlayer.Main.AllTags.RemoveTag("FilterText");
+            Overlayer.Main.AllTags.RemoveTag("FlashText");
+            Overlayer.Main.AllTags.RemoveTag("BloomText");
             RefreshTexts();
         }
 
