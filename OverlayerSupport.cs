@@ -1,5 +1,7 @@
 ﻿using Overlayer;
 using Overlayer.Core;
+using Overlayer.Core.Tags;
+using System;
 
 namespace ShowVFXs
 {
@@ -7,25 +9,21 @@ namespace ShowVFXs
     {
         internal static void AddTags()
         {
-            Overlayer.Main.AllTags.LoadTags(typeof(OverlayerSupport));
-            RefreshTexts();
+            TagManager.Load(typeof(OverlayerSupport));
+            TextManager.Refresh();
         }
 
         internal static void RemoveTags()
         {
-            Overlayer.Main.AllTags.RemoveTag("FilterText");
-            Overlayer.Main.AllTags.RemoveTag("FlashText");
-            Overlayer.Main.AllTags.RemoveTag("BloomText");
-            RefreshTexts();
-        }
-
-        internal static void RefreshTexts()
-        {
-            OText.Texts.ForEach(otext => otext.Apply());
+            TagManager.Unload(typeof(OverlayerSupport));
+            TextManager.Refresh();
         }
 
         [Tag("FilterText")]
         internal static string GetFilterText() => Main.filterText.Text;
+
+        [Tag("FilterIntensity")]
+        internal static float GetFilterIntensity(string filter) => Enum.TryParse(filter, true, out Filter value) ? (FilterPatch.Get(value, out float intensity) ? intensity : 0) : -1;
 
         [Tag("FlashText")]
         internal static string GetFlashText() => Main.flashText.Text;

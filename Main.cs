@@ -172,7 +172,7 @@ namespace ShowVFXs
             };
             modEntry.OnLateUpdate = (_, __) =>
             {
-                if (!inited)
+                if (!inited && GCS.levelEventsInfo != null)
                 {
                     inited = true;
                     List<string> enable = GCS.levelEventsInfo[GCS.levelEventTypeString[LevelEventType.SetFilter]].propertiesInfo["intensity"].enableIfVals.Where(tuple => tuple.Item1 == "filter").Select(tuple => tuple.Item2).ToList();

@@ -6,8 +6,6 @@ namespace ShowVFXs
 {
     internal static class FilterPatch
     {
-        internal static readonly Dictionary<Filter, float> filter = new Dictionary<Filter, float>();
-
         private static readonly List<Filter> filters = new List<Filter>();
         private static readonly List<float> intensities = new List<float>();
 
@@ -35,6 +33,8 @@ namespace ShowVFXs
 
         private static void Set(Filter filter, float intensity)
         {
+            if (Main.onOffTypes.Contains(filter) && intensity != 0)
+                intensity = 1;
             int i = filters.IndexOf(filter);
             if (i != -1)
                 intensities[i] = intensity;
@@ -69,7 +69,7 @@ namespace ShowVFXs
             {
                 if (!scrVfxPlus.instance.filterToComp.ContainsKey(f))
                     return;
-                if (!fEnable || (fIntensity == 0 && !Main.onOffTypes.Contains(f)))
+                if (!fEnable)
                     Remove(f);
                 else
                     Set(f, fIntensity);
