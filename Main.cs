@@ -154,10 +154,10 @@ namespace ShowVFXs
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(filterText);
-                    UnityEngine.Object.Destroy(flashText);
-                    UnityEngine.Object.Destroy(bloomText);
-                    UnityEngine.Object.Destroy(entireText);
+                    UnityEngine.Object.Destroy(filterText.gameObject);
+                    UnityEngine.Object.Destroy(flashText.gameObject);
+                    UnityEngine.Object.Destroy(bloomText.gameObject);
+                    UnityEngine.Object.Destroy(entireText.gameObject);
                     if (UnityModManager.modEntries.Select(m => m.Info.Id).Contains("Overlayer"))
                         AccessTools.Method(typeof(OverlayerSupport), "RemoveTags").Invoke(null, null);
                     harmony.UnpatchAll(modEntry.Info.Id);
