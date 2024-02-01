@@ -146,9 +146,10 @@ namespace ShowVFXs
                     entireText.enabled = Settings.entireEnable;
                     try
                     {
-                        AccessTools.Method(typeof(OverlayerSupport), "AddTags").Invoke(null, null);
+                        OverlayerSupport.AddTags();
                     }
-                    catch (Exception) {
+                    catch (Exception)
+                    {
                     }
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                 }
@@ -158,8 +159,13 @@ namespace ShowVFXs
                     UnityEngine.Object.Destroy(flashText.gameObject);
                     UnityEngine.Object.Destroy(bloomText.gameObject);
                     UnityEngine.Object.Destroy(entireText.gameObject);
-                    if (UnityModManager.modEntries.Select(m => m.Info.Id).Contains("Overlayer"))
-                        AccessTools.Method(typeof(OverlayerSupport), "RemoveTags").Invoke(null, null);
+                    try
+                    {
+                        OverlayerSupport.RemoveTags();
+                    }
+                    catch (Exception)
+                    {
+                    }
                     harmony.UnpatchAll(modEntry.Info.Id);
                 }
                 return true;

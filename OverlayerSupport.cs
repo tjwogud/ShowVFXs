@@ -1,4 +1,5 @@
-﻿using Overlayer;
+﻿using HarmonyLib;
+using Overlayer;
 using Overlayer.Core;
 using Overlayer.Core.Tags;
 using System;
@@ -9,15 +10,19 @@ namespace ShowVFXs
     {
         internal static void AddTags()
         {
-            TagManager.Load(typeof(OverlayerSupport));
-            TextManager.Refresh();
+            Reflections.GetType("Overlayer.Core.TagManager").Method("Load", new object[] { Reflections.GetType("ShowVFXs.OverlayerTags") }, new Type[] { typeof(Type) });
+            Reflections.GetType("Overlayer.Core.TextManager").Method("Refresh");
         }
 
         internal static void RemoveTags()
         {
-            TagManager.Unload(typeof(OverlayerSupport));
-            TextManager.Refresh();
+            Reflections.GetType("Overlayer.Core.TagManager").Method("Unload", new object[] { Reflections.GetType("ShowVFXs.OverlayerTags") }, new Type[] { typeof(Type) });
+            Reflections.GetType("Overlayer.Core.TextManager").Method("Refresh");
         }
+    }
+
+    public static class OverlayerTags
+    {
 
         [Tag("FilterText")]
         public static string GetFilterText() => Main.filterText.Text;
