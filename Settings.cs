@@ -58,7 +58,22 @@ namespace ShowVFXs
 		public bool bloomShowTextEmpty = true;
 		public string bloomTextEmpty = "Bloom: Off";
 
-		public bool entireEnable = false;
+        public bool advFilterEnable = true;
+        public float advFilterX = 0;
+        public float advFilterY = 0;
+        public int advFilterTextSize = 35;
+        public bool advFilterBoldText = false;
+        public bool advFilterShadowText = true;
+        public TextAnchor advFilterTextAlign = TextAnchor.LowerLeft;
+        public FilterTextOrder advFilterTextOrder;
+        public string advFilterTextFormat = "{name}: On";
+        public string advFilterOn = "On";
+        public string advFilterOff = "Off";
+        public string advFilterTextSeparator = "{newLine}";
+        public bool advFilterShowTextEmpty = true;
+        public string advFilterTextEmpty = "No Advanced Filters applied!";
+
+        public bool entireEnable = false;
 		public float entireX = 0;
 		public float entireY = 0;
 		public int entireTextSize = 35;

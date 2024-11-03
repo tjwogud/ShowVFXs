@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,6 +9,8 @@ namespace ShowVFXs
     {
         private static readonly List<Filter> filters = new List<Filter>();
         private static readonly List<float> intensities = new List<float>();
+
+        internal static readonly List<string> advancedFilters = new List<string>();
 
         internal static int Count()
         {
@@ -59,6 +62,7 @@ namespace ShowVFXs
         {
             filters.Clear();
             intensities.Clear();
+            advancedFilters.Clear();
         }
 
         [HarmonyPatch(typeof(ffxSetFilterPlus), "SetFilter")]
@@ -106,6 +110,23 @@ namespace ShowVFXs
             internal static void Postfix()
             {
                 Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(ffxSetFilterAdvancedPlus), "StartEffect")]
+        public static class AdvancedStartEffectPatch
+        {
+            public static void Postfix(string ___filterName, bool ___enableFilter, bool ___disableOthers)
+            {
+                if (ffxSetFilterAdvancedPlus.blacklistedFilterKeywords.Any(___filterName.Contains))
+                    return;
+                ___filterName = ___filterName.Replace("CameraFilterPack_", "").UnCamelCase(RDUtils.UnCamelCaseOptions.SpaceBeforeNumbers | RDUtils.UnCamelCaseOptions.UnderbarToSpace);
+                if (___disableOthers)
+                    advancedFilters.Clear();
+                if (___enableFilter && !advancedFilters.Contains(___filterName))
+                    advancedFilters.Add(___filterName);
+                if (!___enableFilter && advancedFilters.Contains(___filterName))
+                    advancedFilters.Remove(___filterName);
             }
         }
     }

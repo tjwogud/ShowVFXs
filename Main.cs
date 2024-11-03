@@ -23,6 +23,7 @@ namespace ShowVFXs
         internal static VfxText filterText;
         internal static VfxText flashText;
         internal static VfxText bloomText;
+        internal static VfxText advFilterText;
         internal static VfxText entireText;
 
         internal static void Setup(UnityModManager.ModEntry modEntry)
@@ -133,9 +134,33 @@ namespace ShowVFXs
                         () => Settings.bloomTextAlign
                     );
                     bloomText.enabled = Settings.bloomEnable;
+                    advFilterText = new GameObject("AdvFilterText").AddComponent<VfxText>();
+                    advFilterText.Init(
+                        () =>
+                        {
+                            if (FilterPatch.advancedFilters.Count() == 0)
+                                return Settings.advFilterShowTextEmpty ? Settings.advFilterTextEmpty : "";
+                            else
+                            {
+                                var query = FilterPatch.advancedFilters.Select(name => Settings.advFilterTextFormat.Replace("{name}", name));
+                                if (Settings.advFilterTextOrder == FilterTextOrder.Ascending || Settings.advFilterTextOrder == FilterTextOrder.Descending)
+                                    query = query.OrderBy(t => t);
+                                if (Settings.advFilterTextOrder == FilterTextOrder.Descending || Settings.advFilterTextOrder == FilterTextOrder.ReverseAdded)
+                                    query = query.Reverse();
+                                return string.Join(Settings.advFilterTextSeparator, query);
+                            }
+                        },
+                        () => Settings.advFilterX,
+                        () => Settings.advFilterY,
+                        () => Settings.advFilterTextSize,
+                        () => Settings.advFilterBoldText,
+                        () => Settings.advFilterShadowText,
+                        () => Settings.advFilterTextAlign
+                    );
+                    advFilterText.enabled = Settings.filterEnable;
                     entireText = new GameObject("EntireText").AddComponent<VfxText>();
                     entireText.Init(
-                        () => Settings.entireTextFormat.Replace("{filterText}", filterText.Text).Replace("{flashText}", flashText.Text).Replace("{bloomText}", bloomText.Text),
+                        () => Settings.entireTextFormat.Replace("{filterText}", filterText.Text).Replace("{flashText}", flashText.Text).Replace("{bloomText}", bloomText.Text).Replace("{advFilterText}", advFilterText.Text),
                         () => Settings.entireX,
                         () => Settings.entireY,
                         () => Settings.entireTextSize,
@@ -148,8 +173,9 @@ namespace ShowVFXs
                     {
                         OverlayerSupport.AddTags();
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Logger.LogException(e);
                     }
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                 }
@@ -158,6 +184,7 @@ namespace ShowVFXs
                     UnityEngine.Object.Destroy(filterText.gameObject);
                     UnityEngine.Object.Destroy(flashText.gameObject);
                     UnityEngine.Object.Destroy(bloomText.gameObject);
+                    UnityEngine.Object.Destroy(advFilterText.gameObject);
                     UnityEngine.Object.Destroy(entireText.gameObject);
                     try
                     {
@@ -198,6 +225,7 @@ namespace ShowVFXs
         private static bool filterGui = false;
         private static bool flashGui = false;
         private static bool bloomGui = false;
+        private static bool advFilterGui = false;
         private static bool entireGui = false;
 
         internal static void OnGUI(UnityModManager.ModEntry modEntry)
@@ -463,6 +491,77 @@ namespace ShowVFXs
                 Settings.bloomShadowText = Toggle(Localization["sv.settings.shadowText"], "", Settings.bloomShadowText);
                 GUILayout.Space(10);
                 Settings.bloomTextAlign = Anchor(Settings.bloomTextAlign);
+                GUILayout.EndVertical();
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+
+                GUILayout.EndHorizontal();
+            }
+
+            GUILayout.BeginHorizontal();
+            advFilterGui = GUILayout.Toggle(advFilterGui, advFilterGui ? "▼" : "▶", GUI.skin.label);
+            Settings.advFilterEnable = advFilterText.enabled = GUILayout.Toggle(Settings.advFilterEnable, Localization["sv.gui.advFilter"]);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            if (advFilterGui)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+
+                GUILayout.BeginVertical();
+                GUILayout.Label(Localization["sv.gui.position"]);
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical(GUI.skin.box);
+                Settings.advFilterX = Slider(Localization["sv.settings.x"], Settings.advFilterX, 0, 1, 2, GUILayout.Width(300));
+                GUILayout.Space(10);
+                Settings.advFilterY = Slider(Localization["sv.settings.y"], Settings.advFilterY, 0, 1, 2, GUILayout.Width(300));
+                GUILayout.EndVertical();
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+
+                GUILayout.Space(10);
+
+                GUILayout.BeginVertical();
+                GUILayout.Label(Localization["sv.gui.text"]);
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical(GUI.skin.box);
+                Settings.advFilterTextFormat = TextField(Localization["sv.settings.advFilter.textFormat"], Settings.advFilterTextFormat);
+                GUILayout.Space(10);
+                Settings.advFilterOn = TextField(Localization["sv.settings.advFilter.textOn"], Settings.advFilterOn);
+                GUILayout.Space(10);
+                Settings.advFilterOff = TextField(Localization["sv.settings.advFilter.textOff"], Settings.advFilterOff);
+                GUILayout.Space(10);
+                Settings.advFilterTextSeparator = TextField(Localization["sv.settings.textSeparator"], Settings.advFilterTextSeparator);
+                GUILayout.Space(10);
+                Settings.advFilterShowTextEmpty = ToggleableTextField(Localization["sv.settings.advFilter.textEmpty"], "", Settings.advFilterShowTextEmpty, Settings.advFilterTextEmpty, out string v, new GUILayoutOption[0], new GUILayoutOption[0]);
+                Settings.advFilterTextEmpty = v;
+                GUILayout.EndVertical();
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+
+                GUILayout.Space(10);
+
+                GUILayout.BeginVertical();
+                GUILayout.Label(Localization["sv.gui.textEffect"]);
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical(GUI.skin.box);
+                Settings.advFilterTextSize = (int)Slider(Localization["sv.settings.textSize"], Settings.advFilterTextSize, 1f, 50f, 0, GUILayout.Width(200));
+                GUILayout.Space(10);
+                Settings.advFilterBoldText = Toggle(Localization["sv.settings.boldText"], "", Settings.advFilterBoldText);
+                GUILayout.Space(10);
+                Settings.advFilterShadowText = Toggle(Localization["sv.settings.shadowText"], "", Settings.advFilterShadowText);
+                GUILayout.Space(10);
+                Settings.advFilterTextOrder = (FilterTextOrder)Toolbar(Localization["sv.settings.advFilter.textOrder"], (int)Settings.advFilterTextOrder,
+                    new string[] {
+                        Localization["filterTextOrder.ascending"], Localization["filterTextOrder.descending"], Localization["filterTextOrder.added"], Localization["filterTextOrder.reverseAdded"]
+                    }
+                );
+                GUILayout.Space(10);
+                Settings.advFilterTextAlign = Anchor(Settings.advFilterTextAlign);
                 GUILayout.EndVertical();
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
